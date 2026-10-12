@@ -1,6 +1,6 @@
 {
   "name": "@k44deusz/password-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Generator haseł korzystający z Web Crypto, z wyborem zestawów znaków i długości.",
   "type": "module",
   "exports": {
