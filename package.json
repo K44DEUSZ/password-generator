@@ -1,7 +1,7 @@
 {
   "name": "@k44deusz/password-generator",
   "version": "1.0.0",
-  "description": "Dependency-free password generation using Web Crypto and unbiased random sampling.",
+  "description": "Generator haseł korzystający z Web Crypto, z wyborem zestawów znaków i długości.",
   "type": "module",
   "exports": {
     ".": {
@@ -15,7 +15,8 @@
   "files": [
     "dist",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "README.en.md"
   ],
   "engines": {
     "node": ">=20"

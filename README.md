@@ -1,20 +1,16 @@
 # password-generator
 
-Dependency-free password generation using Web Crypto and unbiased random sampling.
+[English version](README.en.md)
 
-Independent TypeScript source, ESM JavaScript releases and generated type declarations. No React, Next.js, runtime dependencies, UI or private application configuration.
+Generator tworzy hasła z wybranych zestawów znaków. Działa w przeglądarce i w Node.js; losowanie opiera na Web Crypto. Każdy włączony zestaw wnosi przynajmniej jeden znak, a na koniec kolejność jest tasowana.
 
-## Installation
+## Jak użyć
 
-Download a versioned package from [Releases](https://github.com/K44DEUSZ/password-generator/releases), then install it:
+Pobierz paczkę wybranego wydania z [Releases](https://github.com/K44DEUSZ/password-generator/releases), a następnie zainstaluj ją w swoim projekcie:
 
 ```sh
 npm install ./k44deusz-password-generator-1.0.0.tgz
 ```
-
-Packages are distributed as GitHub release assets; no npm-registry publication is implied.
-
-## Usage
 
 ```ts
 import { generatePassword } from "@k44deusz/password-generator";
@@ -27,17 +23,17 @@ const password = generatePassword(24, {
 });
 ```
 
-## Contract
+## Co warto wiedzieć
 
-`generatePassword(length = 24, options = defaultOptions)` returns a password with an integer length from 1 to 1024. Options contain the four boolean fields shown above. At least one set must be enabled, and length must be at least the number of enabled sets. Every enabled set contributes a character, then the result is shuffled.
+Długość musi być liczbą całkowitą od 1 do 1024 i pomieścić każdy wybrany zestaw. Domyślnie generator używa 24 znaków oraz wszystkich czterech zestawów. Ich zawartość znajdziesz w `characterSets`.
 
-Requires `globalThis.crypto.getRandomValues`, available in current browsers in secure contexts and Node.js 20+. There is no `Math.random` fallback, storage or networking. Sampling rejects the incomplete remainder before applying modulo; a broken random source is rejected after bounded attempts. Requiring each enabled group constrains the output distribution; passwords are not claimed to be uniformly sampled from every possible valid string. The library does not estimate strength or entropy.
+Losowanie odrzuca wartości, które wprowadzałyby nierówny rozkład przy operacji modulo. Wymaga `crypto.getRandomValues`; nie zastępuje go `Math.random`. W przeglądarce użyj HTTPS lub localhost. Gdy źródło losowości nie działa, dostaniesz `PasswordError` z polem `code`.
 
-`PasswordError.code` is stable: `invalid_length`, `invalid_options`, `empty_character_set`, `length_below_group_count`, `secure_random_unavailable`, `random_source_failure`. `characterSets` and `defaultOptions` are read-only exports.
+Obowiązkowy znak z każdego zestawu ogranicza zbiór wyników. Biblioteka nie wylicza entropii i nie obiecuje równomiernego losowania spośród wszystkich możliwych haseł spełniających te warunki.
 
-## Development
+## Praca z kodem
 
-Use Node.js 24 for development and CI.
+Do pracy nad biblioteką użyj Node.js 24. Kod jest w TypeScript; wydania zawierają JavaScript ESM i deklaracje typów.
 
 ```sh
 npm ci
@@ -45,8 +41,8 @@ npm run check
 npm test
 ```
 
-A successful push to main creates a tested versioned release. If the package version already exists, the release workflow increments its patch version and commits that metadata. Explicit higher versions are preserved. Release artifacts include compiled JavaScript, declarations and this license.
+Po poprawnym sprawdzeniu zmian na `main` automat publikuje wydanie. Jeśli numer już istnieje, zwiększa ostatnią część wersji i zapisuje tę zmianę w Git. Paczki są dostępne na GitHubie; nie wymagają konta w rejestrze npm.
 
-## License
+## Licencja
 
 MIT. Copyright 2026 Bartosz Golat.
