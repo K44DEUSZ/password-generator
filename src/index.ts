@@ -39,7 +39,11 @@ function randomIndex(max: number): number {
   const values = new Uint32Array(1);
   // Reject the incomplete remainder to avoid modulo bias. Bound retries for broken sources.
   for (let attempt = 0; attempt < 128; attempt += 1) {
-    source.getRandomValues(values);
+    try {
+      source.getRandomValues(values);
+    } catch {
+      throw new PasswordError("random_source_failure");
+    }
     if (values[0] < limit) return values[0] % max;
   }
   throw new PasswordError("random_source_failure");

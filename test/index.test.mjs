@@ -72,3 +72,9 @@ test("missing Web Crypto is rejected explicitly", () => {
     Object.defineProperty(globalThis, "crypto", descriptor);
   }
 });
+test("a rejected random request reports a stable API error", (context) => {
+  context.mock.method(globalThis.crypto, "getRandomValues", () => {
+    throw new Error("Random source rejected the request");
+  });
+  assert.throws(() => generatePassword(), { name: "PasswordError", code: "random_source_failure" });
+});
