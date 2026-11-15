@@ -78,3 +78,71 @@ test("a rejected random request reports a stable API error", (context) => {
   });
   assert.throws(() => generatePassword(), { name: "PasswordError", code: "random_source_failure" });
 });
+
+test("every nonempty group combination stays within its alphabet and required length", (context) => {
+  let state = 123456789;
+  context.mock.method(globalThis.crypto, "getRandomValues", (values) => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
+    values[0] = state;
+    return values;
+  });
+  const keys = Object.keys(defaultOptions);
+  for (let mask = 1; mask < 16; mask += 1) {
+    const options = Object.fromEntries(
+      keys.map((key, index) => [key, Boolean(mask & (1 << index))]),
+    );
+    const enabled = keys.filter((key) => options[key]);
+    const alphabet = enabled.map((key) => characterSets[key]).join("");
+    for (const length of [enabled.length, 12, 24, 1024]) {
+      const value = generatePassword(length, options);
+      assert.equal(value.length, length);
+      assert.ok([...value].every((character) => alphabet.includes(character)));
+      for (const key of enabled)
+        assert.ok([...value].some((character) => characterSets[key].includes(character)));
+    }
+    if (enabled.length > 1)
+      assert.throws(() => generatePassword(enabled.length - 1, options), {
+        code: "length_below_group_count",
+      });
+  }
+});
+
+test("rejection sampling accepts its last unbiased value and bounds broken-provider retries", (context) => {
+  const options = { lower: false, upper: false, numbers: true, symbols: false };
+  const limit = Math.floor(0x100000000 / 10) * 10;
+  let calls = 0;
+  context.mock.method(globalThis.crypto, "getRandomValues", (values) => {
+    calls += 1;
+    values[0] = calls < 128 ? limit : limit - 1;
+    return values;
+  });
+  assert.equal(generatePassword(1, options), "9");
+  assert.equal(calls, 128);
+  calls = 0;
+  context.mock.method(globalThis.crypto, "getRandomValues", (values) => {
+    calls += 1;
+    values[0] = limit;
+    return values;
+  });
+  assert.throws(() => generatePassword(1, options), {
+    name: "PasswordError",
+    code: "random_source_failure",
+  });
+  assert.equal(calls, 128);
+});
+
+test("invalid JavaScript arguments fail before requesting randomness", (context) => {
+  context.mock.method(globalThis.crypto, "getRandomValues", () => {
+    assert.fail("Invalid input requested randomness");
+  });
+  for (const length of [null, "24", 24n, {}, [], Number.MAX_SAFE_INTEGER, -Infinity])
+    assert.throws(() => generatePassword(length), {
+      name: "PasswordError",
+      code: "invalid_length",
+    });
+  for (const options of [false, "lower", 1, [], {}, null, { ...defaultOptions, upper: undefined }])
+    assert.throws(() => generatePassword(24, options), {
+      name: "PasswordError",
+      code: "invalid_options",
+    });
+});
