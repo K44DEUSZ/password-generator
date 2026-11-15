@@ -4,14 +4,14 @@
 
 Generator tworzy hasła z wybranych zestawów znaków. Działa w przeglądarce i w Node.js; losowanie opiera na Web Crypto. Każdy włączony zestaw wnosi przynajmniej jeden znak, a na koniec kolejność jest tasowana.
 
-Bieżące poprawki pozostają na wersji 1.0.0 i nie stanowią nowego wydania. Publiczna paczka 1.0.0 nie jest nadpisywana; nowe możliwości opisane poniżej dotyczą aktualnego kodu repozytorium. Aby je sprawdzić przed wydaniem, uruchom `npm ci`, `npm run build`, `npm pack` i zainstaluj uzyskany plik lokalnie. Changelog pozostaje w repozytorium i nie trafia do paczki.
+Wydanie 1.0.1 zawiera poprawki po audycie i zachowuje dotychczasowe API. Changelog pozostaje w repozytorium i nie trafia do paczki.
 
 ## Jak użyć
 
 Pobierz paczkę wybranego wydania z [Releases](https://github.com/K44DEUSZ/password-generator/releases), a następnie zainstaluj ją w swoim projekcie:
 
 ```sh
-npm install ./k44deusz-password-generator-1.0.0.tgz
+npm install ./k44deusz-password-generator-1.0.1.tgz
 ```
 
 ```ts
